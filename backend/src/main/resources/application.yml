@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: smart-basket-backend
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/smartbasket
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+logging:
+  level:
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG

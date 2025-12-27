@@ -1,0 +1,17 @@
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: smart-basket-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  redis:
+    image: redis:latest
+    container_name: smart-basket-redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  mongo-data:
