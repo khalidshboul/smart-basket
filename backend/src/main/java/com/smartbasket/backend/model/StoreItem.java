@@ -28,6 +28,7 @@ public class StoreItem {
     private String referenceItemId;
 
     private String name; // Store specific name
+    private String nameAr; // Arabic store specific name
     private String brand;
     private String barcode;
     

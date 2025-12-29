@@ -19,6 +19,7 @@ public class ReferenceItem {
     @Id
     private String id;
     private String name;
+    private String nameAr;  // Arabic name
     
     // Category reference (new - primary)
     private String categoryId;
@@ -27,6 +28,7 @@ public class ReferenceItem {
     private String category;
     
     private String description;
+    private String descriptionAr;  // Arabic description
     
     // Multiple images support (migrated from imageUrl)
     @Builder.Default

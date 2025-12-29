@@ -13,7 +13,9 @@ import lombok.NoArgsConstructor;
 public class CreateStoreRequest {
     @NotBlank(message = "Name is required")
     private String name;
+    private String nameAr;
 
     private String location;
+    private String locationAr;
     private String logoUrl;
 }

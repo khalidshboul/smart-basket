@@ -1,7 +1,7 @@
 import { apiClient } from './client';
 import type { Store, CreateStoreRequest } from '../types';
 
-const BASE_PATH = '/api/v1/stores';
+const BASE_PATH = '/stores';
 
 export const storeApi = {
     getAll: async (): Promise<Store[]> => {

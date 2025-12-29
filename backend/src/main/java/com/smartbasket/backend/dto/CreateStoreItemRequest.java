@@ -22,6 +22,7 @@ public class CreateStoreItemRequest {
     
     @NotBlank(message = "Name is required")
     private String name;
+    private String nameAr;
     
     private String brand;
     private String barcode;

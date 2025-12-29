@@ -67,9 +67,11 @@ public class ReferenceItemService {
         return referenceItemRepository.findById(id)
                 .map(existing -> {
                     existing.setName(request.getName());
+                    existing.setNameAr(request.getNameAr());
                     existing.setCategoryId(request.getCategoryId());
                     existing.setCategory(categoryName);
                     existing.setDescription(request.getDescription());
+                    existing.setDescriptionAr(request.getDescriptionAr());
                     existing.setImages(request.getImages() != null ? request.getImages() : existing.getImages());
                     if (request.getAvailableInAllStores() != null) {
                         existing.setAvailableInAllStores(request.getAvailableInAllStores());

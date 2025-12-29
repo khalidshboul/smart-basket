@@ -48,7 +48,9 @@ public class StoreService {
         return storeRepository.findById(id)
                 .map(existing -> {
                     existing.setName(request.getName());
+                    existing.setNameAr(request.getNameAr());
                     existing.setLocation(request.getLocation());
+                    existing.setLocationAr(request.getLocationAr());
                     existing.setLogoUrl(request.getLogoUrl());
                     return storeRepository.save(existing);
                 })

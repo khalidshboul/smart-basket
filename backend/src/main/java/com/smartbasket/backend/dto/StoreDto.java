@@ -12,7 +12,9 @@ import lombok.NoArgsConstructor;
 public class StoreDto {
     private String id;
     private String name;
+    private String nameAr;
     private String location;
+    private String locationAr;
     private String logoUrl;
     private boolean active;
 }
