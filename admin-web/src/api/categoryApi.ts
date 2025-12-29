@@ -1,7 +1,7 @@
 import { apiClient } from './client';
 import type { Category, CreateCategoryRequest } from '../types';
 
-const BASE_PATH = '/api/v1/categories';
+const BASE_PATH = '/categories';
 
 export const categoryApi = {
     getAll: async (): Promise<Category[]> => {

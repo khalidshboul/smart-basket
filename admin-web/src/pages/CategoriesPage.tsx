@@ -26,8 +26,10 @@ export function CategoriesPage() {
     const emojiPickerRef = useRef<HTMLDivElement>(null);
     const [formData, setFormData] = useState<CreateCategoryRequest>({
         name: '',
+        nameAr: '',
         icon: '',
         description: '',
+        descriptionAr: '',
         displayOrder: 0,
         active: true,
     });
@@ -79,8 +81,10 @@ export function CategoriesPage() {
         setEditingCategory(null);
         setFormData({
             name: '',
+            nameAr: '',
             icon: '',
             description: '',
+            descriptionAr: '',
             displayOrder: categories.length,
             active: true,
         });
@@ -92,8 +96,10 @@ export function CategoriesPage() {
         setEditingCategory(category);
         setFormData({
             name: category.name,
+            nameAr: category.nameAr || '',
             icon: category.icon || '',
             description: category.description || '',
+            descriptionAr: category.descriptionAr || '',
             displayOrder: category.displayOrder,
             active: category.active,
         });
@@ -275,7 +281,7 @@ export function CategoriesPage() {
                         <form onSubmit={handleSubmit}>
                             <div className="modal-body">
                                 <div>
-                                    <label className="form-label">Name *</label>
+                                    <label className="form-label">Name (English) *</label>
                                     <input
                                         type="text"
                                         className="form-input"
@@ -283,6 +289,17 @@ export function CategoriesPage() {
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                         placeholder="e.g., Dairy Products"
                                         required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="form-label">Name (Arabic)</label>
+                                    <input
+                                        type="text"
+                                        className="form-input"
+                                        dir="rtl"
+                                        value={formData.nameAr || ''}
+                                        onChange={(e) => setFormData({ ...formData, nameAr: e.target.value })}
+                                        placeholder="مثال: منتجات الألبان"
                                     />
                                 </div>
                                 <div>
@@ -343,13 +360,24 @@ export function CategoriesPage() {
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="form-label">Description</label>
+                                    <label className="form-label">Description (English)</label>
                                     <input
                                         type="text"
                                         className="form-input"
                                         value={formData.description}
                                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                         placeholder="Optional description"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="form-label">Description (Arabic)</label>
+                                    <input
+                                        type="text"
+                                        className="form-input"
+                                        dir="rtl"
+                                        value={formData.descriptionAr || ''}
+                                        onChange={(e) => setFormData({ ...formData, descriptionAr: e.target.value })}
+                                        placeholder="وصف اختياري"
                                     />
                                 </div>
                                 <div>

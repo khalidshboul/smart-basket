@@ -45,8 +45,10 @@ public class CategoryService {
 
         Category category = Category.builder()
                 .name(request.getName())
+                .nameAr(request.getNameAr())
                 .icon(request.getIcon())
                 .description(request.getDescription())
+                .descriptionAr(request.getDescriptionAr())
                 .displayOrder(request.getDisplayOrder() != null ? request.getDisplayOrder() : 0)
                 .active(request.getActive() != null ? request.getActive() : true)
                 .build();
@@ -68,8 +70,10 @@ public class CategoryService {
                 });
 
         existing.setName(request.getName());
+        existing.setNameAr(request.getNameAr());
         existing.setIcon(request.getIcon());
         existing.setDescription(request.getDescription());
+        existing.setDescriptionAr(request.getDescriptionAr());
         if (request.getDisplayOrder() != null) {
             existing.setDisplayOrder(request.getDisplayOrder());
         }
@@ -102,8 +106,10 @@ public class CategoryService {
         return CategoryDto.builder()
                 .id(entity.getId())
                 .name(entity.getName())
+                .nameAr(entity.getNameAr())
                 .icon(entity.getIcon())
                 .description(entity.getDescription())
+                .descriptionAr(entity.getDescriptionAr())
                 .displayOrder(entity.getDisplayOrder())
                 .active(entity.isActive())
                 .build();

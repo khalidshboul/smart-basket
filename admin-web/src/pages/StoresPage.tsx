@@ -10,7 +10,9 @@ export function StoresPage() {
     const [editingStore, setEditingStore] = useState<Store | null>(null);
     const [formData, setFormData] = useState<CreateStoreRequest>({
         name: '',
+        nameAr: '',
         location: '',
+        locationAr: '',
         logoUrl: '',
     });
 
@@ -52,7 +54,7 @@ export function StoresPage() {
 
     const openCreateModal = () => {
         setEditingStore(null);
-        setFormData({ name: '', location: '', logoUrl: '' });
+        setFormData({ name: '', nameAr: '', location: '', locationAr: '', logoUrl: '' });
         setIsModalOpen(true);
     };
 
@@ -60,7 +62,9 @@ export function StoresPage() {
         setEditingStore(store);
         setFormData({
             name: store.name,
+            nameAr: store.nameAr || '',
             location: store.location || '',
+            locationAr: store.locationAr || '',
             logoUrl: store.logoUrl || '',
         });
         setIsModalOpen(true);
@@ -210,7 +214,7 @@ export function StoresPage() {
                         <form onSubmit={handleSubmit}>
                             <div className="modal-body">
                                 <div>
-                                    <label className="form-label">Name *</label>
+                                    <label className="form-label">Name (English) *</label>
                                     <input
                                         type="text"
                                         className="form-input"
@@ -221,13 +225,35 @@ export function StoresPage() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="form-label">Location</label>
+                                    <label className="form-label">Name (Arabic)</label>
+                                    <input
+                                        type="text"
+                                        className="form-input"
+                                        dir="rtl"
+                                        value={formData.nameAr || ''}
+                                        onChange={(e) => setFormData({ ...formData, nameAr: e.target.value })}
+                                        placeholder="مثال: كارفور"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="form-label">Location (English)</label>
                                     <input
                                         type="text"
                                         className="form-input"
                                         value={formData.location}
                                         onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                                         placeholder="e.g., Downtown Mall"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="form-label">Location (Arabic)</label>
+                                    <input
+                                        type="text"
+                                        className="form-input"
+                                        dir="rtl"
+                                        value={formData.locationAr || ''}
+                                        onChange={(e) => setFormData({ ...formData, locationAr: e.target.value })}
+                                        placeholder="مثال: مول وسط البلد"
                                     />
                                 </div>
                                 <div>

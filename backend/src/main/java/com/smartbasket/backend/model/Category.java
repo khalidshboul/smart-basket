@@ -19,9 +19,11 @@ public class Category {
     
     @Indexed(unique = true)
     private String name;
+    private String nameAr;  // Arabic name
     
-    private String icon;        // Optional emoji or icon URL
-    private String description; // Optional
+    private String icon;  // Optional emoji or icon URL
+    private String description;
+    private String descriptionAr;  // Arabic description
     
     @Builder.Default
     private int displayOrder = 0;

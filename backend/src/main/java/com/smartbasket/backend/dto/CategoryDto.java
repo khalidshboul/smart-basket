@@ -12,8 +12,10 @@ import lombok.NoArgsConstructor;
 public class CategoryDto {
     private String id;
     private String name;
+    private String nameAr;
     private String icon;
     private String description;
+    private String descriptionAr;
     private int displayOrder;
     private boolean active;
 }

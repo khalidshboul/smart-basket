@@ -14,8 +14,10 @@ export function ItemsPage() {
     const [filterCategory, setFilterCategory] = useState('');
     const [formData, setFormData] = useState<CreateReferenceItemRequest>({
         name: '',
+        nameAr: '',
         categoryId: '',
         description: '',
+        descriptionAr: '',
         images: [],
         availableInAllStores: true,
         specificStoreIds: [],
@@ -61,6 +63,9 @@ export function ItemsPage() {
     const toggleMutation = useMutation({
         mutationFn: referenceItemApi.toggleStatus,
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ['items'] }),
+        onError: (error: Error) => {
+            alert(`Failed to toggle item status: ${error.message}`);
+        },
     });
 
     // Filter items
@@ -74,8 +79,10 @@ export function ItemsPage() {
         setEditingItem(null);
         setFormData({
             name: '',
+            nameAr: '',
             categoryId: categories.length > 0 ? categories[0].id : '',
             description: '',
+            descriptionAr: '',
             images: [],
             availableInAllStores: true,
             specificStoreIds: [],
@@ -87,8 +94,10 @@ export function ItemsPage() {
         setEditingItem(item);
         setFormData({
             name: item.name,
+            nameAr: item.nameAr || '',
             categoryId: item.categoryId || '',
             description: item.description || '',
+            descriptionAr: item.descriptionAr || '',
             images: item.images || [],
             availableInAllStores: item.availableInAllStores ?? true,
             specificStoreIds: item.specificStoreIds || [],
@@ -281,16 +290,18 @@ export function ItemsPage() {
                                 <button
                                     onClick={() => {
                                         const action = item.active ? 'deactivate' : 'activate';
-                                        if (confirm(`Are you sure you want to ${action} "${item.name}"?`)) {
+                                        const confirmed = window.confirm(`Are you sure you want to ${action} "${item.name}"?`);
+                                        if (confirmed) {
                                             toggleMutation.mutate(item.id);
                                         }
                                     }}
+                                    disabled={toggleMutation.isPending}
                                     className={`btn btn-sm flex-1 ${item.active
                                         ? 'btn-secondary'
                                         : 'bg-green-100 text-green-700 hover:bg-green-200'
-                                        }`}
+                                        } ${toggleMutation.isPending ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
-                                    {item.active ? 'Deactivate' : 'Activate'}
+                                    {toggleMutation.isPending ? 'Processing...' : (item.active ? 'Deactivate' : 'Activate')}
                                 </button>
                                 <button
                                     onClick={() => openEditModal(item)}
@@ -323,13 +334,25 @@ export function ItemsPage() {
                         <form onSubmit={handleSubmit}>
                             <div className="modal-body">
                                 <div>
-                                    <label className="form-label">Name *</label>
+                                    <label className="form-label">Name (English) *</label>
                                     <input
                                         type="text"
                                         className="form-input"
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                         required
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="form-label">Name (Arabic)</label>
+                                    <input
+                                        type="text"
+                                        className="form-input"
+                                        dir="rtl"
+                                        value={formData.nameAr || ''}
+                                        onChange={(e) => setFormData({ ...formData, nameAr: e.target.value })}
+                                        placeholder="الاسم بالعربية"
                                     />
                                 </div>
 
@@ -351,12 +374,24 @@ export function ItemsPage() {
                                 </div>
 
                                 <div>
-                                    <label className="form-label">Description</label>
+                                    <label className="form-label">Description (English)</label>
                                     <input
                                         type="text"
                                         className="form-input"
                                         value={formData.description}
                                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="form-label">Description (Arabic)</label>
+                                    <input
+                                        type="text"
+                                        className="form-input"
+                                        dir="rtl"
+                                        value={formData.descriptionAr || ''}
+                                        onChange={(e) => setFormData({ ...formData, descriptionAr: e.target.value })}
+                                        placeholder="الوصف بالعربية"
                                     />
                                 </div>
 

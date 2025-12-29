@@ -1,7 +1,7 @@
 import { apiClient } from './client';
 import type { StorePrice, BatchPriceUpdateRequest, BatchPriceUpdateResponse } from '../types';
 
-const BASE_PATH = '/api/prices';
+const BASE_PATH = '/prices';
 
 export const priceApi = {
     /**

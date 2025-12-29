@@ -15,11 +15,13 @@ import java.util.List;
 public class CreateReferenceItemRequest {
     @NotBlank(message = "Name is required")
     private String name;
+    private String nameAr;
 
     @NotBlank(message = "Category ID is required")
     private String categoryId;
 
     private String description;
+    private String descriptionAr;
     private List<String> images;
     
     // Store availability (defaults to true if not specified)

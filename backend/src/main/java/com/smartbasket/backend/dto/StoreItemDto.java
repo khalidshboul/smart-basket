@@ -19,6 +19,7 @@ public class StoreItemDto {
     private String referenceItemId;
     private String referenceItemName;
     private String name;
+    private String nameAr;
     private String brand;
     private String barcode;
     private List<String> images;

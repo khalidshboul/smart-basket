@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/store-items")
+@RequestMapping("/store-items")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class StoreItemController {

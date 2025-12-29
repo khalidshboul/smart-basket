@@ -3,16 +3,20 @@
 export interface Category {
     id: string;
     name: string;
+    nameAr: string | null;
     icon: string | null;
     description: string | null;
+    descriptionAr: string | null;
     displayOrder: number;
     active: boolean;
 }
 
 export interface CreateCategoryRequest {
     name: string;
+    nameAr?: string;
     icon?: string;
     description?: string;
+    descriptionAr?: string;
     displayOrder?: number;
     active?: boolean;
 }
@@ -22,9 +26,11 @@ export interface CreateCategoryRequest {
 export interface ReferenceItem {
     id: string;
     name: string;
+    nameAr: string | null;
     categoryId: string;
     category: string; // Denormalized category name
     description: string;
+    descriptionAr: string | null;
     images: string[];
     availableInAllStores: boolean;
     specificStoreIds: string[];
@@ -34,8 +40,10 @@ export interface ReferenceItem {
 
 export interface CreateReferenceItemRequest {
     name: string;
+    nameAr?: string;
     categoryId: string;
     description?: string;
+    descriptionAr?: string;
     images?: string[];
     availableInAllStores?: boolean;
     specificStoreIds?: string[];
@@ -46,14 +54,18 @@ export interface CreateReferenceItemRequest {
 export interface Store {
     id: string;
     name: string;
+    nameAr: string | null;
     location: string;
+    locationAr: string | null;
     logoUrl: string;
     active: boolean;
 }
 
 export interface CreateStoreRequest {
     name: string;
+    nameAr?: string;
     location?: string;
+    locationAr?: string;
     logoUrl?: string;
 }
 
@@ -66,6 +78,7 @@ export interface StoreItem {
     referenceItemId: string;
     referenceItemName: string;
     name: string;
+    nameAr: string | null;
     brand: string;
     barcode: string;
     images: string[];
@@ -82,6 +95,7 @@ export interface CreateStoreItemRequest {
     storeId: string;
     referenceItemId: string;
     name: string;
+    nameAr?: string;
     brand?: string;
     barcode?: string;
     images?: string[];

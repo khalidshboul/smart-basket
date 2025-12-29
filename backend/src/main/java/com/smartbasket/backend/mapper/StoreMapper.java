@@ -15,7 +15,9 @@ public class StoreMapper {
         return StoreDto.builder()
                 .id(entity.getId())
                 .name(entity.getName())
+                .nameAr(entity.getNameAr())
                 .location(entity.getLocation())
+                .locationAr(entity.getLocationAr())
                 .logoUrl(entity.getLogoUrl())
                 .active(entity.isActive())
                 .build();
@@ -27,7 +29,9 @@ public class StoreMapper {
         }
         return Store.builder()
                 .name(request.getName())
+                .nameAr(request.getNameAr())
                 .location(request.getLocation())
+                .locationAr(request.getLocationAr())
                 .logoUrl(request.getLogoUrl())
                 .active(true)
                 .build();

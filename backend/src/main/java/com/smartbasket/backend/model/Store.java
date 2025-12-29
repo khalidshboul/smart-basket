@@ -16,7 +16,9 @@ public class Store {
     @Id
     private String id;
     private String name;
+    private String nameAr;  // Arabic name
     private String location;
+    private String locationAr;  // Arabic location
     private String logoUrl;
     
     @Builder.Default

@@ -14,9 +14,11 @@ import java.util.List;
 public class ReferenceItemDto {
     private String id;
     private String name;
+    private String nameAr;
     private String categoryId;
     private String category; // Denormalized category name
     private String description;
+    private String descriptionAr;
     private List<String> images;
     private boolean availableInAllStores;
     private List<String> specificStoreIds;
