@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MarketItemPriceInfo {
+public class StoreItemPriceInfo {
     private String referenceItemId;
     private String referenceItemName;
-    private String marketItemId;
-    private String marketItemName;
+    private String storeItemId;
+    private String storeItemName;
     private String brand;
     private Double price;
     private String currency;

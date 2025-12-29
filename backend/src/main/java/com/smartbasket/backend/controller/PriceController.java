@@ -2,7 +2,7 @@ package com.smartbasket.backend.controller;
 
 import com.smartbasket.backend.dto.BatchPriceUpdateRequest;
 import com.smartbasket.backend.dto.BatchPriceUpdateResponse;
-import com.smartbasket.backend.model.MarketPrice;
+import com.smartbasket.backend.model.StorePrice;
 import com.smartbasket.backend.service.PriceUpdateService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -27,14 +27,14 @@ public class PriceController {
      * Update a single item's price
      */
     @PostMapping
-    public ResponseEntity<MarketPrice> updatePrice(
-            @RequestParam @NotBlank String marketItemId,
+    public ResponseEntity<StorePrice> updatePrice(
+            @RequestParam @NotBlank String storeItemId,
             @RequestParam @NotNull @Min(0) Double price,
             @RequestParam(required = false) @Min(0) Double originalPrice,
             @RequestParam(required = false) String currency,
             @RequestParam(required = false) Boolean isPromotion) {
         
-        MarketPrice updatedPrice = priceUpdateService.updatePrice(marketItemId, price, originalPrice, currency, isPromotion);
+        StorePrice updatedPrice = priceUpdateService.updatePrice(storeItemId, price, originalPrice, currency, isPromotion);
         return ResponseEntity.status(HttpStatus.CREATED).body(updatedPrice);
     }
 
@@ -50,11 +50,11 @@ public class PriceController {
     }
 
     /**
-     * Get price history for a market item
+     * Get price history for a store item
      */
-    @GetMapping("/history/{marketItemId}")
-    public ResponseEntity<List<MarketPrice>> getPriceHistory(@PathVariable String marketItemId) {
-        List<MarketPrice> history = priceUpdateService.getPriceHistory(marketItemId);
+    @GetMapping("/history/{storeItemId}")
+    public ResponseEntity<List<StorePrice>> getPriceHistory(@PathVariable String storeItemId) {
+        List<StorePrice> history = priceUpdateService.getPriceHistory(storeItemId);
         return ResponseEntity.ok(history);
     }
 }

@@ -26,9 +26,9 @@ export interface ReferenceItem {
     category: string; // Denormalized category name
     description: string;
     images: string[];
-    availableInAllMarkets: boolean;
-    specificMarketIds: string[];
-    linkedMarketIds: string[];
+    availableInAllStores: boolean;
+    specificStoreIds: string[];
+    linkedStoreIds: string[];
     active: boolean;
 }
 
@@ -37,13 +37,13 @@ export interface CreateReferenceItemRequest {
     categoryId: string;
     description?: string;
     images?: string[];
-    availableInAllMarkets?: boolean;
-    specificMarketIds?: string[];
+    availableInAllStores?: boolean;
+    specificStoreIds?: string[];
 }
 
-// ============ Market Types ============
+// ============ Store Types ============
 
-export interface Market {
+export interface Store {
     id: string;
     name: string;
     location: string;
@@ -51,18 +51,18 @@ export interface Market {
     active: boolean;
 }
 
-export interface CreateMarketRequest {
+export interface CreateStoreRequest {
     name: string;
     location?: string;
     logoUrl?: string;
 }
 
-// ============ Market Item Types ============
+// ============ Store Item Types ============
 
-export interface MarketItem {
+export interface StoreItem {
     id: string;
-    marketId: string;
-    marketName: string;
+    storeId: string;
+    storeName: string;
     referenceItemId: string;
     referenceItemName: string;
     name: string;
@@ -78,8 +78,8 @@ export interface MarketItem {
     lastPriceUpdate: string | null;
 }
 
-export interface CreateMarketItemRequest {
-    marketId: string;
+export interface CreateStoreItemRequest {
+    storeId: string;
     referenceItemId: string;
     name: string;
     brand?: string;
@@ -93,9 +93,9 @@ export interface CreateMarketItemRequest {
 
 // ============ Price Types ============
 
-export interface MarketPrice {
+export interface StorePrice {
     id: string;
-    marketItemId: string;
+    storeItemId: string;
     price: number;
     originalPrice: number | null;
     currency: string;
@@ -104,7 +104,7 @@ export interface MarketPrice {
 }
 
 export interface PriceEntry {
-    marketItemId: string;
+    storeItemId: string;
     price: number;
     originalPrice?: number;
     currency?: string;
@@ -116,7 +116,7 @@ export interface BatchPriceUpdateRequest {
 }
 
 export interface PriceUpdateResult {
-    marketItemId: string;
+    storeItemId: string;
     success: boolean;
     message: string;
     newPrice: number | null;
@@ -137,9 +137,9 @@ export interface BasketComparisonRequest {
 
 export interface BasketComparisonResponse {
     basketItems: BasketItemInfo[];
-    marketComparisons: MarketComparisonResult[];
-    cheapestMarketId: string | null;
-    cheapestMarketName: string | null;
+    storeComparisons: StoreComparisonResult[];
+    cheapestStoreId: string | null;
+    cheapestStoreName: string | null;
     lowestTotal: number;
     highestTotal: number;
     potentialSavings: number;
@@ -151,24 +151,24 @@ export interface BasketItemInfo {
     category: string;
 }
 
-export interface MarketComparisonResult {
-    marketId: string;
-    marketName: string;
-    marketLogoUrl: string;
+export interface StoreComparisonResult {
+    storeId: string;
+    storeName: string;
+    storeLogoUrl: string;
     totalPrice: number;
     currency: string;
     allItemsAvailable: boolean;
-    itemPrices: MarketItemPriceInfo[];
+    itemPrices: StoreItemPriceInfo[];
     missingItems: string[];
     availableItemCount: number;
     totalItemCount: number;
 }
 
-export interface MarketItemPriceInfo {
+export interface StoreItemPriceInfo {
     referenceItemId: string;
     referenceItemName: string;
-    marketItemId: string;
-    marketItemName: string;
+    storeItemId: string;
+    storeItemName: string;
     brand: string;
     price: number;
     currency: string;

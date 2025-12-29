@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { referenceItemApi } from '../api/referenceItemApi';
-import { marketApi } from '../api/marketApi';
+import { storeApi } from '../api/storeApi';
 import { categoryApi } from '../api/categoryApi';
 import { FolderOpen, Package, Store, DollarSign, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -11,9 +11,9 @@ export function Dashboard() {
         queryFn: referenceItemApi.getAll,
     });
 
-    const { data: markets = [] } = useQuery({
-        queryKey: ['markets'],
-        queryFn: marketApi.getAll,
+    const { data: stores = [] } = useQuery({
+        queryKey: ['stores'],
+        queryFn: storeApi.getAll,
     });
 
     const { data: categories = [] } = useQuery({
@@ -21,13 +21,13 @@ export function Dashboard() {
         queryFn: categoryApi.getAll,
     });
 
-    const activeMarkets = markets.filter(m => m.active).length;
+    const activeStores = stores.filter(s => s.active).length;
 
     const stats = [
         { icon: FolderOpen, label: 'Categories', value: categories.length, color: 'bg-blue-100 text-blue-600', link: '/categories' },
         { icon: Package, label: 'Items', value: items.length, color: 'bg-green-100 text-green-600', link: '/items' },
-        { icon: Store, label: 'Active Markets', value: activeMarkets, color: 'bg-purple-100 text-purple-600', link: '/markets' },
-        { icon: DollarSign, label: 'Total Markets', value: markets.length, color: 'bg-amber-100 text-amber-600', link: '/markets' },
+        { icon: Store, label: 'Active Stores', value: activeStores, color: 'bg-purple-100 text-purple-600', link: '/stores' },
+        { icon: DollarSign, label: 'Total Stores', value: stores.length, color: 'bg-amber-100 text-amber-600', link: '/stores' },
     ];
 
     return (
@@ -67,9 +67,9 @@ export function Dashboard() {
                         <Package size={16} />
                         Manage Items
                     </Link>
-                    <Link to="/markets" className="btn btn-secondary flex items-center gap-2">
+                    <Link to="/stores" className="btn btn-secondary flex items-center gap-2">
                         <Store size={16} />
-                        Manage Markets
+                        Manage Stores
                     </Link>
                     <Link to="/prices" className="btn btn-primary flex items-center gap-2">
                         <DollarSign size={16} />
@@ -85,7 +85,7 @@ export function Dashboard() {
                     <ol className="list-decimal list-inside text-sm text-slate-600 space-y-2">
                         <li>Create categories to organize your products</li>
                         <li>Add reference items (generic products)</li>
-                        <li>Set up markets (hypermarket locations)</li>
+                        <li>Set up stores (hypermarket locations)</li>
                         <li>Update prices for each market</li>
                         <li>Preview how users will see the data</li>
                     </ol>

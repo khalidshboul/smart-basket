@@ -4,7 +4,7 @@ import { Layout } from './components/Layout';
 import { Dashboard } from './pages/Dashboard';
 import { CategoriesPage } from './pages/CategoriesPage';
 import { ItemsPage } from './pages/ItemsPage';
-import { MarketsPage } from './pages/MarketsPage';
+import { StoresPage } from './pages/StoresPage';
 import { PricesPage } from './pages/PricesPage';
 import { PreviewPage } from './pages/PreviewPage';
 import './index.css';
@@ -27,7 +27,7 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/categories" element={<CategoriesPage />} />
             <Route path="/items" element={<ItemsPage />} />
-            <Route path="/markets" element={<MarketsPage />} />
+            <Route path="/stores" element={<StoresPage />} />
             <Route path="/prices" element={<PricesPage />} />
             <Route path="/preview" element={<PreviewPage />} />
           </Routes>

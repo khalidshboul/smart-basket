@@ -1,36 +1,33 @@
 package com.smartbasket.backend.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateMarketItemRequest {
-    
-    @NotBlank(message = "Market ID is required")
-    private String marketId;
-    
-    @NotBlank(message = "Reference Item ID is required")
+public class StoreItemDto {
+    private String id;
+    private String storeId;
+    private String storeName;
     private String referenceItemId;
-    
-    @NotBlank(message = "Name is required")
+    private String referenceItemName;
     private String name;
-    
     private String brand;
     private String barcode;
     private List<String> images;
     
-    // Optional: set initial price on creation
-    private Double initialPrice;
-    private Double originalPrice; // Original price before discount
+    // Current price info
+    private Double currentPrice;
+    private Double originalPrice;
+    private Double discountPercentage; // Calculated field
     private String currency;
     private Boolean isPromotion;
+    private Instant lastPriceUpdate;
 }
-

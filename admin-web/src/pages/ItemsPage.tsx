@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { referenceItemApi } from '../api/referenceItemApi';
-import { marketApi } from '../api/marketApi';
+import { storeApi } from '../api/storeApi';
 import { categoryApi } from '../api/categoryApi';
 import { Plus, Pencil, Trash2, Package, Search, ImageIcon } from 'lucide-react';
-import type { ReferenceItem, CreateReferenceItemRequest, Market } from '../types';
+import type { ReferenceItem, CreateReferenceItemRequest, Store } from '../types';
 
 export function ItemsPage() {
     const queryClient = useQueryClient();
@@ -17,8 +17,8 @@ export function ItemsPage() {
         categoryId: '',
         description: '',
         images: [],
-        availableInAllMarkets: true,
-        specificMarketIds: [],
+        availableInAllStores: true,
+        specificStoreIds: [],
     });
 
     const { data: items = [], isLoading } = useQuery({
@@ -26,9 +26,9 @@ export function ItemsPage() {
         queryFn: referenceItemApi.getAll,
     });
 
-    const { data: markets = [] } = useQuery({
-        queryKey: ['markets'],
-        queryFn: marketApi.getAll,
+    const { data: stores = [] } = useQuery({
+        queryKey: ['stores'],
+        queryFn: storeApi.getAll,
     });
 
     const { data: categories = [] } = useQuery({
@@ -77,8 +77,8 @@ export function ItemsPage() {
             categoryId: categories.length > 0 ? categories[0].id : '',
             description: '',
             images: [],
-            availableInAllMarkets: true,
-            specificMarketIds: [],
+            availableInAllStores: true,
+            specificStoreIds: [],
         });
         setIsModalOpen(true);
     };
@@ -90,8 +90,8 @@ export function ItemsPage() {
             categoryId: item.categoryId || '',
             description: item.description || '',
             images: item.images || [],
-            availableInAllMarkets: item.availableInAllMarkets ?? true,
-            specificMarketIds: item.specificMarketIds || [],
+            availableInAllStores: item.availableInAllStores ?? true,
+            specificStoreIds: item.specificStoreIds || [],
         });
         setIsModalOpen(true);
     };
@@ -135,12 +135,12 @@ export function ItemsPage() {
         });
     };
 
-    const handleMarketToggle = (marketId: string) => {
-        const current = formData.specificMarketIds || [];
-        if (current.includes(marketId)) {
-            setFormData({ ...formData, specificMarketIds: current.filter(id => id !== marketId) });
+    const handleStoreToggle = (storeId: string) => {
+        const current = formData.specificStoreIds || [];
+        if (current.includes(storeId)) {
+            setFormData({ ...formData, specificStoreIds: current.filter((id: string) => id !== storeId) });
         } else {
-            setFormData({ ...formData, specificMarketIds: [...current, marketId] });
+            setFormData({ ...formData, specificStoreIds: [...current, storeId] });
         }
     };
 
@@ -174,7 +174,7 @@ export function ItemsPage() {
                 <div>
                     <h1 className="text-2xl font-bold text-slate-800">Reference Items</h1>
                     <p className="text-slate-500 text-sm mt-1">
-                        Manage your product catalog and market availability.
+                        Manage your product catalog and store availability.
                     </p>
                 </div>
                 <button onClick={openCreateModal} className="btn btn-primary flex items-center gap-2">
@@ -266,11 +266,11 @@ export function ItemsPage() {
 
                                 {/* Availability */}
                                 <div className="flex items-center gap-2 text-xs">
-                                    {item.availableInAllMarkets ? (
-                                        <span className="text-green-600">✓ All markets</span>
+                                    {item.availableInAllStores ? (
+                                        <span className="text-green-600">✓ All stores</span>
                                     ) : (
                                         <span className="text-amber-600">
-                                            {item.specificMarketIds?.length || 0} specific markets
+                                            {item.specificStoreIds?.length || 0} specific stores
                                         </span>
                                     )}
                                 </div>
@@ -399,37 +399,37 @@ export function ItemsPage() {
                                     </label>
                                 </div>
 
-                                {/* Market Availability */}
+                                {/* Store Availability */}
                                 <div>
-                                    <label className="form-label">Market Availability</label>
+                                    <label className="form-label">Store Availability</label>
                                     <div className="space-y-2">
                                         <label className="flex items-center gap-2 cursor-pointer">
                                             <input
                                                 type="radio"
-                                                checked={formData.availableInAllMarkets}
-                                                onChange={() => setFormData({ ...formData, availableInAllMarkets: true, specificMarketIds: [] })}
+                                                checked={formData.availableInAllStores}
+                                                onChange={() => setFormData({ ...formData, availableInAllStores: true, specificStoreIds: [] })}
                                             />
-                                            <span className="text-sm">All markets</span>
+                                            <span className="text-sm">All stores</span>
                                         </label>
                                         <label className="flex items-center gap-2 cursor-pointer">
                                             <input
                                                 type="radio"
-                                                checked={!formData.availableInAllMarkets}
-                                                onChange={() => setFormData({ ...formData, availableInAllMarkets: false })}
+                                                checked={!formData.availableInAllStores}
+                                                onChange={() => setFormData({ ...formData, availableInAllStores: false })}
                                             />
-                                            <span className="text-sm">Specific markets only</span>
+                                            <span className="text-sm">Specific stores only</span>
                                         </label>
                                     </div>
-                                    {!formData.availableInAllMarkets && (
+                                    {!formData.availableInAllStores && (
                                         <div className="mt-2 p-3 bg-slate-50 rounded-lg max-h-32 overflow-y-auto space-y-1">
-                                            {markets.map((m: Market) => (
-                                                <label key={m.id} className="flex items-center gap-2 cursor-pointer text-sm">
+                                            {stores.map((s: Store) => (
+                                                <label key={s.id} className="flex items-center gap-2 cursor-pointer text-sm">
                                                     <input
                                                         type="checkbox"
-                                                        checked={(formData.specificMarketIds || []).includes(m.id)}
-                                                        onChange={() => handleMarketToggle(m.id)}
+                                                        checked={(formData.specificStoreIds || []).includes(s.id)}
+                                                        onChange={() => handleStoreToggle(s.id)}
                                                     />
-                                                    {m.name}
+                                                    {s.name}
                                                 </label>
                                             ))}
                                         </div>

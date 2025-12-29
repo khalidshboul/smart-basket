@@ -1,22 +1,22 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { referenceItemApi } from '../api/referenceItemApi';
-import { marketApi } from '../api/marketApi';
-import { marketItemApi } from '../api/marketItemApi';
+import { storeApi } from '../api/storeApi';
+import { storeItemApi } from '../api/storeItemApi';
 import { priceApi } from '../api/priceApi';
 import { categoryApi } from '../api/categoryApi';
 import { Search, ChevronDown, Package, Save, X } from 'lucide-react';
-import type { MarketItem } from '../types';
+import type { StoreItem } from '../types';
 
 interface PendingChange {
-    marketItemId: string;
+    storeItemId: string;
     currentPrice: number;
     originalPrice: number | null;
 }
 
 interface PendingNewItem {
     referenceItemId: string;
-    marketId: string;
+    storeId: string;
     price: number;
     originalPrice: number | null;
 }
@@ -34,14 +34,14 @@ export function PricesPage() {
         queryFn: referenceItemApi.getAll,
     });
 
-    const { data: markets = [] } = useQuery({
-        queryKey: ['markets'],
-        queryFn: marketApi.getAll,
+    const { data: stores = [] } = useQuery({
+        queryKey: ['stores', 'active'],
+        queryFn: storeApi.getActive,
     });
 
-    const { data: marketItems = [] } = useQuery({
-        queryKey: ['marketItems'],
-        queryFn: marketItemApi.getAll,
+    const { data: storeItems = [] } = useQuery({
+        queryKey: ['storeItems'],
+        queryFn: storeItemApi.getAll,
     });
 
     const { data: categories = [] } = useQuery({
@@ -50,14 +50,14 @@ export function PricesPage() {
     });
 
     const updateMutation = useMutation({
-        mutationFn: ({ marketItemId, price, originalPrice }: { marketItemId: string; price: number; originalPrice?: number }) =>
-            priceApi.updatePrice(marketItemId, price, originalPrice),
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['marketItems'] }),
+        mutationFn: ({ storeItemId, price, originalPrice }: { storeItemId: string; price: number; originalPrice?: number }) =>
+            priceApi.updatePrice(storeItemId, price, originalPrice),
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['storeItems'] }),
     });
 
     const createMutation = useMutation({
-        mutationFn: marketItemApi.create,
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['marketItems'] }),
+        mutationFn: storeItemApi.create,
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['storeItems'] }),
     });
 
     // Filter items
@@ -76,30 +76,30 @@ export function PricesPage() {
         });
     };
 
-    const getMarketItem = (refItemId: string, marketId: string): MarketItem | undefined => {
-        return marketItems.find(mi => mi.referenceItemId === refItemId && mi.marketId === marketId);
+    const getStoreItem = (refItemId: string, storeId: string): StoreItem | undefined => {
+        return storeItems.find(si => si.referenceItemId === refItemId && si.storeId === storeId);
     };
 
-    const handlePriceChange = (marketItemId: string, field: 'currentPrice' | 'originalPrice', value: string) => {
+    const handlePriceChange = (storeItemId: string, field: 'currentPrice' | 'originalPrice', value: string) => {
         const numValue = parseFloat(value) || 0;
         setPendingChanges(prev => {
             const next = new Map(prev);
-            const existing = next.get(marketItemId) || { marketItemId, currentPrice: 0, originalPrice: null };
-            next.set(marketItemId, { ...existing, [field]: field === 'originalPrice' && value === '' ? null : numValue });
+            const existing = next.get(storeItemId) || { storeItemId, currentPrice: 0, originalPrice: null };
+            next.set(storeItemId, { ...existing, [field]: field === 'originalPrice' && value === '' ? null : numValue });
             return next;
         });
     };
 
-    const handleNewItemPrice = (refItemId: string, marketId: string, field: 'price' | 'originalPrice', value: string) => {
+    const handleNewItemPrice = (refItemId: string, storeId: string, field: 'price' | 'originalPrice', value: string) => {
         const numValue = parseFloat(value) || 0;
         setPendingNewItems(prev => {
-            const idx = prev.findIndex(p => p.referenceItemId === refItemId && p.marketId === marketId);
+            const idx = prev.findIndex(p => p.referenceItemId === refItemId && p.storeId === storeId);
             if (idx >= 0) {
                 const next = [...prev];
                 next[idx] = { ...next[idx], [field]: field === 'originalPrice' && value === '' ? null : numValue };
                 return next;
             }
-            return [...prev, { referenceItemId: refItemId, marketId, price: field === 'price' ? numValue : 0, originalPrice: field === 'originalPrice' ? numValue : null }];
+            return [...prev, { referenceItemId: refItemId, storeId, price: field === 'price' ? numValue : 0, originalPrice: field === 'originalPrice' ? numValue : null }];
         });
     };
 
@@ -107,17 +107,17 @@ export function PricesPage() {
         // Save price updates
         for (const change of pendingChanges.values()) {
             await updateMutation.mutateAsync({
-                marketItemId: change.marketItemId,
+                storeItemId: change.storeItemId,
                 price: change.currentPrice,
                 originalPrice: change.originalPrice ?? undefined,
             });
         }
-        // Create new market items
+        // Create new store items
         for (const newItem of pendingNewItems) {
             if (newItem.price > 0) {
                 await createMutation.mutateAsync({
                     referenceItemId: newItem.referenceItemId,
-                    marketId: newItem.marketId,
+                    storeId: newItem.storeId,
                     name: items.find(i => i.id === newItem.referenceItemId)?.name || '',
                     initialPrice: newItem.price,
                     originalPrice: newItem.originalPrice ?? undefined,
@@ -149,7 +149,7 @@ export function PricesPage() {
             <div>
                 <h1 className="text-2xl font-bold text-slate-800">Price Management</h1>
                 <p className="text-slate-500 text-sm mt-1">
-                    Update and track prices across all markets.
+                    Update and track prices across all stores.
                 </p>
             </div>
 
@@ -201,37 +201,37 @@ export function PricesPage() {
                             {/* Expanded Content */}
                             {isExpanded && (
                                 <div className="border-t border-slate-100 p-4 bg-slate-50">
-                                    {markets.length === 0 ? (
+                                    {((item.availableInAllStores ?? true) ? stores : stores.filter(store => item.specificStoreIds?.includes(store.id))).length === 0 ? (
                                         <div className="text-center py-4 text-slate-400">
-                                            No markets found. <a href="/markets" className="text-primary-600 hover:underline">Add a market first</a>.
+                                            No stores available for this item. {(item.availableInAllStores ?? true) ? <a href="/stores" className="text-primary-600 hover:underline">Add a store first</a> : 'Update item to select specific stores.'}
                                         </div>
                                     ) : (
                                         <table className="w-full text-sm">
                                             <thead>
                                                 <tr className="text-left text-slate-500">
-                                                    <th className="pb-2">Market</th>
+                                                    <th className="pb-2">Store</th>
                                                     <th className="pb-2">Original Price</th>
                                                     <th className="pb-2">Discount Price</th>
                                                     <th className="pb-2">Discount</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {markets.map(market => {
-                                                    const mi = getMarketItem(item.id, market.id);
-                                                    const pendingChange = mi ? pendingChanges.get(mi.id) : undefined;
-                                                    const pendingNew = pendingNewItems.find(p => p.referenceItemId === item.id && p.marketId === market.id);
+                                                {((item.availableInAllStores ?? true) ? stores : stores.filter(store => item.specificStoreIds?.includes(store.id))).map(store => {
+                                                    const si = getStoreItem(item.id, store.id);
+                                                    const pendingChange = si ? pendingChanges.get(si.id) : undefined;
+                                                    const pendingNew = pendingNewItems.find(p => p.referenceItemId === item.id && p.storeId === store.id);
 
-                                                    const discountPrice = pendingChange?.currentPrice ?? mi?.currentPrice ?? pendingNew?.price ?? 0;
-                                                    const originalPrice = pendingChange?.originalPrice ?? mi?.originalPrice ?? pendingNew?.originalPrice ?? null;
+                                                    const discountPrice = pendingChange?.currentPrice ?? si?.currentPrice ?? pendingNew?.price ?? 0;
+                                                    const originalPrice = pendingChange?.originalPrice ?? si?.originalPrice ?? pendingNew?.originalPrice ?? null;
                                                     const discount = originalPrice && originalPrice > discountPrice
                                                         ? Math.round(((originalPrice - discountPrice) / originalPrice) * 100)
                                                         : null;
 
                                                     return (
-                                                        <tr key={market.id} className="border-t border-slate-200">
+                                                        <tr key={store.id} className="border-t border-slate-200">
                                                             <td className="py-2 font-medium">
-                                                                {market.name}
-                                                                {!market.active && <span className="ml-2 text-xs text-slate-400">(inactive)</span>}
+                                                                {store.name}
+                                                                {!store.active && <span className="ml-2 text-xs text-slate-400">(inactive)</span>}
                                                             </td>
                                                             <td className="py-2">
                                                                 <input
@@ -240,8 +240,8 @@ export function PricesPage() {
                                                                     className="form-input w-24 py-1 px-2 text-sm"
                                                                     value={originalPrice || ''}
                                                                     onChange={(e) => {
-                                                                        if (mi) handlePriceChange(mi.id, 'originalPrice', e.target.value);
-                                                                        else handleNewItemPrice(item.id, market.id, 'originalPrice', e.target.value);
+                                                                        if (si) handlePriceChange(si.id, 'originalPrice', e.target.value);
+                                                                        else handleNewItemPrice(item.id, store.id, 'originalPrice', e.target.value);
                                                                     }}
                                                                     placeholder="0.00"
                                                                 />
@@ -253,8 +253,8 @@ export function PricesPage() {
                                                                     className="form-input w-24 py-1 px-2 text-sm"
                                                                     value={discountPrice || ''}
                                                                     onChange={(e) => {
-                                                                        if (mi) handlePriceChange(mi.id, 'currentPrice', e.target.value);
-                                                                        else handleNewItemPrice(item.id, market.id, 'price', e.target.value);
+                                                                        if (si) handlePriceChange(si.id, 'currentPrice', e.target.value);
+                                                                        else handleNewItemPrice(item.id, store.id, 'price', e.target.value);
                                                                     }}
                                                                     placeholder="0.00"
                                                                 />

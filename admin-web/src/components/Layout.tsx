@@ -16,7 +16,7 @@ const navItems = [
     { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
     { to: '/categories', icon: FolderOpen, label: 'Categories' },
     { to: '/items', icon: Package, label: 'Items' },
-    { to: '/markets', icon: Store, label: 'Markets' },
+    { to: '/stores', icon: Store, label: 'Stores' },
     { to: '/prices', icon: DollarSign, label: 'Prices' },
     { to: '/preview', icon: Eye, label: 'Preview' },
 ];

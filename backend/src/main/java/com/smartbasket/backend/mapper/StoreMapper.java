@@ -1,18 +1,18 @@
 package com.smartbasket.backend.mapper;
 
-import com.smartbasket.backend.dto.CreateMarketRequest;
-import com.smartbasket.backend.dto.MarketDto;
-import com.smartbasket.backend.model.Market;
+import com.smartbasket.backend.dto.CreateStoreRequest;
+import com.smartbasket.backend.dto.StoreDto;
+import com.smartbasket.backend.model.Store;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MarketMapper {
+public class StoreMapper {
 
-    public MarketDto toDto(Market entity) {
+    public StoreDto toDto(Store entity) {
         if (entity == null) {
             return null;
         }
-        return MarketDto.builder()
+        return StoreDto.builder()
                 .id(entity.getId())
                 .name(entity.getName())
                 .location(entity.getLocation())
@@ -21,11 +21,11 @@ public class MarketMapper {
                 .build();
     }
 
-    public Market toEntity(CreateMarketRequest request) {
+    public Store toEntity(CreateStoreRequest request) {
         if (request == null) {
             return null;
         }
-        return Market.builder()
+        return Store.builder()
                 .name(request.getName())
                 .location(request.getLocation())
                 .logoUrl(request.getLogoUrl())

@@ -13,9 +13,9 @@ import java.util.List;
 @AllArgsConstructor
 public class BasketComparisonResponse {
     private List<BasketItemInfo> basketItems;
-    private List<MarketComparisonResult> marketComparisons;
-    private String cheapestMarketId;
-    private String cheapestMarketName;
+    private List<StoreComparisonResult> storeComparisons;
+    private String cheapestStoreId;
+    private String cheapestStoreName;
     private Double lowestTotal;
     private Double highestTotal;
     private Double potentialSavings;
