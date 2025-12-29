@@ -21,9 +21,9 @@ public class ReferenceItemMapper {
                 .category(entity.getCategory())
                 .description(entity.getDescription())
                 .images(entity.getImages() != null ? entity.getImages() : new ArrayList<>())
-                .availableInAllMarkets(entity.isAvailableInAllMarkets())
-                .specificMarketIds(entity.getSpecificMarketIds() != null ? entity.getSpecificMarketIds() : new ArrayList<>())
-                .linkedMarketIds(entity.getLinkedMarketIds() != null ? entity.getLinkedMarketIds() : new ArrayList<>())
+                .availableInAllStores(entity.isAvailableInAllStores())
+                .specificStoreIds(entity.getSpecificStoreIds() != null ? entity.getSpecificStoreIds() : new ArrayList<>())
+                .linkedStoreIds(entity.getLinkedStoreIds() != null ? entity.getLinkedStoreIds() : new ArrayList<>())
                 .active(entity.isActive())
                 .build();
     }
@@ -37,8 +37,8 @@ public class ReferenceItemMapper {
                 .categoryId(request.getCategoryId())
                 .description(request.getDescription())
                 .images(request.getImages() != null ? request.getImages() : new ArrayList<>())
-                .availableInAllMarkets(request.getAvailableInAllMarkets() != null ? request.getAvailableInAllMarkets() : true)
-                .specificMarketIds(request.getSpecificMarketIds() != null ? request.getSpecificMarketIds() : new ArrayList<>())
+                .availableInAllStores(request.getAvailableInAllStores() != null ? request.getAvailableInAllStores() : true)
+                .specificStoreIds(request.getSpecificStoreIds() != null ? request.getSpecificStoreIds() : new ArrayList<>())
                 .build();
     }
 }

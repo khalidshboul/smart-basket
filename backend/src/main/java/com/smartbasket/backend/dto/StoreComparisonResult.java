@@ -11,14 +11,14 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MarketComparisonResult {
-    private String marketId;
-    private String marketName;
-    private String marketLogoUrl;
+public class StoreComparisonResult {
+    private String storeId;
+    private String storeName;
+    private String storeLogoUrl;
     private Double totalPrice;
     private String currency;
     private boolean allItemsAvailable;
-    private List<MarketItemPriceInfo> itemPrices;
+    private List<StoreItemPriceInfo> itemPrices;
     private List<String> missingItems;
     private int availableItemCount;
     private int totalItemCount;

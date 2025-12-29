@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateMarketRequest {
+public class CreateStoreRequest {
     @NotBlank(message = "Name is required")
     private String name;
 

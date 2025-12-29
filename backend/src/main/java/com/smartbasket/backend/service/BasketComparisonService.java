@@ -1,13 +1,13 @@
 package com.smartbasket.backend.service;
 
 import com.smartbasket.backend.dto.*;
-import com.smartbasket.backend.model.Market;
-import com.smartbasket.backend.model.MarketItem;
-import com.smartbasket.backend.model.MarketPrice;
+import com.smartbasket.backend.model.Store;
+import com.smartbasket.backend.model.StoreItem;
+import com.smartbasket.backend.model.StorePrice;
 import com.smartbasket.backend.model.ReferenceItem;
-import com.smartbasket.backend.repository.MarketItemRepository;
-import com.smartbasket.backend.repository.MarketPriceRepository;
-import com.smartbasket.backend.repository.MarketRepository;
+import com.smartbasket.backend.repository.StoreItemRepository;
+import com.smartbasket.backend.repository.StorePriceRepository;
+import com.smartbasket.backend.repository.StoreRepository;
 import com.smartbasket.backend.repository.ReferenceItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,9 +20,9 @@ import java.util.stream.Collectors;
 public class BasketComparisonService {
 
     private final ReferenceItemRepository referenceItemRepository;
-    private final MarketRepository marketRepository;
-    private final MarketItemRepository marketItemRepository;
-    private final MarketPriceRepository marketPriceRepository;
+    private final StoreRepository storeRepository;
+    private final StoreItemRepository storeItemRepository;
+    private final StorePriceRepository storePriceRepository;
 
     private static final String DEFAULT_CURRENCY = "JOD";
 
@@ -43,20 +43,20 @@ public class BasketComparisonService {
                         .build())
                 .collect(Collectors.toList());
 
-        // 2. Get all active markets
-        List<Market> activeMarkets = marketRepository.findByActiveTrue();
+        // 2. Get all active stores
+        List<Store> activeStores = storeRepository.findByActiveTrue();
 
-        // 3. For each market, calculate the basket total
-        List<MarketComparisonResult> marketResults = new ArrayList<>();
+        // 3. For each store, calculate the basket total
+        List<StoreComparisonResult> storeResults = new ArrayList<>();
 
-        for (Market market : activeMarkets) {
-            MarketComparisonResult result = calculateMarketTotal(market, basketReferenceItems);
-            marketResults.add(result);
+        for (Store store : activeStores) {
+            StoreComparisonResult result = calculateStoreTotal(store, basketReferenceItems);
+            storeResults.add(result);
         }
 
-        // 4. Sort by total price (cheapest first), putting markets with missing items last
-        marketResults.sort((a, b) -> {
-            // Markets with all items available come first
+        // 4. Sort by total price (cheapest first), putting stores with missing items last
+        storeResults.sort((a, b) -> {
+            // Stores with all items available come first
             if (a.isAllItemsAvailable() && !b.isAllItemsAvailable()) return -1;
             if (!a.isAllItemsAvailable() && b.isAllItemsAvailable()) return 1;
             // Then sort by price
@@ -64,50 +64,50 @@ public class BasketComparisonService {
         });
 
         // 5. Calculate savings and find cheapest
-        Double lowestTotal = marketResults.stream()
-                .filter(MarketComparisonResult::isAllItemsAvailable)
-                .mapToDouble(MarketComparisonResult::getTotalPrice)
+        Double lowestTotal = storeResults.stream()
+                .filter(StoreComparisonResult::isAllItemsAvailable)
+                .mapToDouble(StoreComparisonResult::getTotalPrice)
                 .min()
                 .orElse(0.0);
 
-        Double highestTotal = marketResults.stream()
-                .filter(MarketComparisonResult::isAllItemsAvailable)
-                .mapToDouble(MarketComparisonResult::getTotalPrice)
+        Double highestTotal = storeResults.stream()
+                .filter(StoreComparisonResult::isAllItemsAvailable)
+                .mapToDouble(StoreComparisonResult::getTotalPrice)
                 .max()
                 .orElse(0.0);
 
-        MarketComparisonResult cheapest = marketResults.stream()
-                .filter(MarketComparisonResult::isAllItemsAvailable)
-                .min(Comparator.comparingDouble(MarketComparisonResult::getTotalPrice))
+        StoreComparisonResult cheapest = storeResults.stream()
+                .filter(StoreComparisonResult::isAllItemsAvailable)
+                .min(Comparator.comparingDouble(StoreComparisonResult::getTotalPrice))
                 .orElse(null);
 
         return BasketComparisonResponse.builder()
                 .basketItems(basketItemInfos)
-                .marketComparisons(marketResults)
-                .cheapestMarketId(cheapest != null ? cheapest.getMarketId() : null)
-                .cheapestMarketName(cheapest != null ? cheapest.getMarketName() : null)
+                .storeComparisons(storeResults)
+                .cheapestStoreId(cheapest != null ? cheapest.getStoreId() : null)
+                .cheapestStoreName(cheapest != null ? cheapest.getStoreName() : null)
                 .lowestTotal(lowestTotal)
                 .highestTotal(highestTotal)
                 .potentialSavings(highestTotal - lowestTotal)
                 .build();
     }
 
-    private MarketComparisonResult calculateMarketTotal(Market market, List<ReferenceItem> basketItems) {
-        List<MarketItemPriceInfo> itemPrices = new ArrayList<>();
+    private StoreComparisonResult calculateStoreTotal(Store store, List<ReferenceItem> basketItems) {
+        List<StoreItemPriceInfo> itemPrices = new ArrayList<>();
         List<String> missingItems = new ArrayList<>();
         double totalPrice = 0.0;
 
         for (ReferenceItem refItem : basketItems) {
-            // Find the market item for this reference item at this market
-            List<MarketItem> marketItems = marketItemRepository.findByReferenceItemId(refItem.getId())
+            // Find the store item for this reference item at this store
+            List<StoreItem> storeItems = storeItemRepository.findByReferenceItemId(refItem.getId())
                     .stream()
-                    .filter(mi -> mi.getMarketId().equals(market.getId()))
+                    .filter(si -> si.getStoreId().equals(store.getId()))
                     .toList();
 
-            if (marketItems.isEmpty()) {
-                // Item not available at this market
+            if (storeItems.isEmpty()) {
+                // Item not available at this store
                 missingItems.add(refItem.getName());
-                itemPrices.add(MarketItemPriceInfo.builder()
+                itemPrices.add(StoreItemPriceInfo.builder()
                         .referenceItemId(refItem.getId())
                         .referenceItemName(refItem.getName())
                         .available(false)
@@ -115,32 +115,32 @@ public class BasketComparisonService {
                         .currency(DEFAULT_CURRENCY)
                         .build());
             } else {
-                // Use cached price from MarketItem (no need to query MarketPrice table)
-                MarketItem marketItem = marketItems.get(0);
+                // Use cached price from StoreItem (no need to query StorePrice table)
+                StoreItem storeItem = storeItems.get(0);
                 
-                if (marketItem.getCurrentPrice() != null && marketItem.getCurrentPrice() > 0) {
-                    totalPrice += marketItem.getCurrentPrice();
+                if (storeItem.getCurrentPrice() != null && storeItem.getCurrentPrice() > 0) {
+                    totalPrice += storeItem.getCurrentPrice();
 
-                    itemPrices.add(MarketItemPriceInfo.builder()
+                    itemPrices.add(StoreItemPriceInfo.builder()
                             .referenceItemId(refItem.getId())
                             .referenceItemName(refItem.getName())
-                            .marketItemId(marketItem.getId())
-                            .marketItemName(marketItem.getName())
-                            .brand(marketItem.getBrand())
-                            .price(marketItem.getCurrentPrice())
-                            .currency(marketItem.getCurrency() != null ? marketItem.getCurrency() : DEFAULT_CURRENCY)
-                            .isPromotion(marketItem.getIsPromotion() != null && marketItem.getIsPromotion())
+                            .storeItemId(storeItem.getId())
+                            .storeItemName(storeItem.getName())
+                            .brand(storeItem.getBrand())
+                            .price(storeItem.getCurrentPrice())
+                            .currency(storeItem.getCurrency() != null ? storeItem.getCurrency() : DEFAULT_CURRENCY)
+                            .isPromotion(storeItem.getIsPromotion() != null && storeItem.getIsPromotion())
                             .available(true)
                             .build());
                 } else {
                     // No price data available
                     missingItems.add(refItem.getName());
-                    itemPrices.add(MarketItemPriceInfo.builder()
+                    itemPrices.add(StoreItemPriceInfo.builder()
                             .referenceItemId(refItem.getId())
                             .referenceItemName(refItem.getName())
-                            .marketItemId(marketItem.getId())
-                            .marketItemName(marketItem.getName())
-                            .brand(marketItem.getBrand())
+                            .storeItemId(storeItem.getId())
+                            .storeItemName(storeItem.getName())
+                            .brand(storeItem.getBrand())
                             .available(false)
                             .price(0.0)
                             .currency(DEFAULT_CURRENCY)
@@ -149,10 +149,10 @@ public class BasketComparisonService {
             }
         }
 
-        return MarketComparisonResult.builder()
-                .marketId(market.getId())
-                .marketName(market.getName())
-                .marketLogoUrl(market.getLogoUrl())
+        return StoreComparisonResult.builder()
+                .storeId(store.getId())
+                .storeName(store.getName())
+                .storeLogoUrl(store.getLogoUrl())
                 .totalPrice(totalPrice)
                 .currency(DEFAULT_CURRENCY)
                 .allItemsAvailable(missingItems.isEmpty())

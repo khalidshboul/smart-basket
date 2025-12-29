@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import type { MarketPrice, BatchPriceUpdateRequest, BatchPriceUpdateResponse } from '../types';
+import type { StorePrice, BatchPriceUpdateRequest, BatchPriceUpdateResponse } from '../types';
 
 const BASE_PATH = '/api/prices';
 
@@ -8,20 +8,20 @@ export const priceApi = {
      * Update a single item's price
      */
     updatePrice: async (
-        marketItemId: string,
+        storeItemId: string,
         price: number,
         originalPrice?: number,
         currency?: string,
         isPromotion?: boolean
-    ): Promise<MarketPrice> => {
+    ): Promise<StorePrice> => {
         const params = new URLSearchParams();
-        params.append('marketItemId', marketItemId);
+        params.append('storeItemId', storeItemId);
         params.append('price', price.toString());
         if (originalPrice !== undefined) params.append('originalPrice', originalPrice.toString());
         if (currency) params.append('currency', currency);
         if (isPromotion !== undefined) params.append('isPromotion', isPromotion.toString());
 
-        const response = await apiClient.post<MarketPrice>(`${BASE_PATH}?${params.toString()}`);
+        const response = await apiClient.post<StorePrice>(`${BASE_PATH}?${params.toString()}`);
         return response.data;
     },
 
@@ -37,11 +37,11 @@ export const priceApi = {
     },
 
     /**
-     * Get price history for a market item
+     * Get price history for a store item
      */
-    getPriceHistory: async (marketItemId: string): Promise<MarketPrice[]> => {
-        const response = await apiClient.get<MarketPrice[]>(
-            `${BASE_PATH}/history/${marketItemId}`
+    getPriceHistory: async (storeItemId: string): Promise<StorePrice[]> => {
+        const response = await apiClient.get<StorePrice[]>(
+            `${BASE_PATH}/history/${storeItemId}`
         );
         return response.data;
     },

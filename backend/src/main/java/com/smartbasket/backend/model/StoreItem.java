@@ -16,22 +16,22 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "market_items")
-public class MarketItem {
+@Document(collection = "store_items")
+public class StoreItem {
     @Id
     private String id;
 
     @Indexed
-    private String marketId;
+    private String storeId;
 
     @Indexed
     private String referenceItemId;
 
-    private String name; // Market specific name
+    private String name; // Store specific name
     private String brand;
     private String barcode;
     
-    // Multiple images support (migrated from imageUrl)
+    // Multiple images support
     @Builder.Default
     private List<String> images = new ArrayList<>();
     
@@ -42,4 +42,3 @@ public class MarketItem {
     private Boolean isPromotion;
     private Instant lastPriceUpdate;
 }
-

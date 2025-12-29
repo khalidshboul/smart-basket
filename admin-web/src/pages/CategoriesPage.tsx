@@ -152,7 +152,7 @@ export function CategoriesPage() {
             {/* Header */}
             <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800">Product Categories</h1>
+                    <h1 className="text-2xl font-bold text-slate-800">Items Categories</h1>
                     <p className="text-slate-500 text-sm mt-1">
                         Organize items for better browsing and comparisons.
                     </p>
@@ -248,7 +248,7 @@ export function CategoriesPage() {
             <div className="bg-slate-900 rounded-3xl p-8 text-white relative overflow-hidden">
                 <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div className="max-w-md">
-                        <h2 className="text-2xl font-bold mb-2">Optimize Your Categories</h2>
+                        <h2 className="text-2xl font-bold mb-2">Optimize Your Items Categories</h2>
                         <p className="text-slate-400 text-sm">
                             Organize your products efficiently for better user experience and faster price comparisons.
                         </p>

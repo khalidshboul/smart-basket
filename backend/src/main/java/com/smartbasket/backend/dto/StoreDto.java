@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MarketDto {
+public class StoreDto {
     private String id;
     private String name;
     private String location;

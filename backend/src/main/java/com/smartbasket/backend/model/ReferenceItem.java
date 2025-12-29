@@ -32,18 +32,18 @@ public class ReferenceItem {
     @Builder.Default
     private List<String> images = new ArrayList<>();
     
-    // Market availability settings
+    // Store availability settings
     @Builder.Default
-    private boolean availableInAllMarkets = true;
+    private boolean availableInAllStores = true;
     
-    // Only used when availableInAllMarkets is false
+    // Only used when availableInAllStores is false
     @Builder.Default
-    private List<String> specificMarketIds = new ArrayList<>();
+    private List<String> specificStoreIds = new ArrayList<>();
     
-    // Denormalized field for fast market lookup
-    // Auto-updated when MarketItem is created/deleted
+    // Denormalized field for fast store lookup
+    // Auto-updated when StoreItem is created/deleted
     @Builder.Default
-    private List<String> linkedMarketIds = new ArrayList<>();
+    private List<String> linkedStoreIds = new ArrayList<>();
     
     // Active status
     @Builder.Default

@@ -18,9 +18,9 @@ public class ReferenceItemDto {
     private String category; // Denormalized category name
     private String description;
     private List<String> images;
-    private boolean availableInAllMarkets;
-    private List<String> specificMarketIds;
-    private List<String> linkedMarketIds;
+    private boolean availableInAllStores;
+    private List<String> specificStoreIds;
+    private List<String> linkedStoreIds;
     private boolean active;
 }
 

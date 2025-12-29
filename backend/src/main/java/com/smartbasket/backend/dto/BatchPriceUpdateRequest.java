@@ -28,8 +28,8 @@ public class BatchPriceUpdateRequest {
     @AllArgsConstructor
     public static class PriceEntry {
         
-        @NotBlank(message = "Market Item ID is required")
-        private String marketItemId;
+        @NotBlank(message = "Store Item ID is required")
+        private String storeItemId;
         
         @NotNull(message = "Price is required")
         @Min(value = 0, message = "Price must be non-negative")

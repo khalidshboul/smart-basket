@@ -71,10 +71,10 @@ public class ReferenceItemService {
                     existing.setCategory(categoryName);
                     existing.setDescription(request.getDescription());
                     existing.setImages(request.getImages() != null ? request.getImages() : existing.getImages());
-                    if (request.getAvailableInAllMarkets() != null) {
-                        existing.setAvailableInAllMarkets(request.getAvailableInAllMarkets());
+                    if (request.getAvailableInAllStores() != null) {
+                        existing.setAvailableInAllStores(request.getAvailableInAllStores());
                     }
-                    existing.setSpecificMarketIds(request.getSpecificMarketIds() != null ? request.getSpecificMarketIds() : existing.getSpecificMarketIds());
+                    existing.setSpecificStoreIds(request.getSpecificStoreIds() != null ? request.getSpecificStoreIds() : existing.getSpecificStoreIds());
                     return referenceItemRepository.save(existing);
                 })
                 .map(referenceItemMapper::toDto);

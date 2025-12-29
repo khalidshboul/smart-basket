@@ -22,7 +22,7 @@ public class BatchPriceUpdateResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class PriceUpdateResult {
-        private String marketItemId;
+        private String storeItemId;
         private boolean success;
         private String message;
         private Double newPrice;

@@ -13,13 +13,13 @@ import java.time.Instant;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "market_prices")
-public class MarketPrice {
+@Document(collection = "store_prices")
+public class StorePrice {
     @Id
     private String id;
 
     @Indexed
-    private String marketItemId;
+    private String storeItemId;
 
     private Double price;
     private Double originalPrice; // Original price before discount
@@ -27,4 +27,3 @@ public class MarketPrice {
     private Instant timestamp;
     private boolean isPromotion;
 }
-

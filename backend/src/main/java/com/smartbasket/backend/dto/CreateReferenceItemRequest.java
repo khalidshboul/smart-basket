@@ -22,8 +22,8 @@ public class CreateReferenceItemRequest {
     private String description;
     private List<String> images;
     
-    // Market availability (defaults to true if not specified)
-    private Boolean availableInAllMarkets;
-    private List<String> specificMarketIds;
+    // Store availability (defaults to true if not specified)
+    private Boolean availableInAllStores;
+    private List<String> specificStoreIds;
 }
 
