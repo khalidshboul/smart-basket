@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://aleah-nonoperational-cordia.ngrok-free.dev/smart-basket/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://aleah-nonoperational-cordia.ngrok-free.dev';
 
 export const apiClient = axios.create({
     baseURL: API_BASE_URL,
