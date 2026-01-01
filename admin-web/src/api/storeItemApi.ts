@@ -1,7 +1,7 @@
 import { apiClient } from './client';
 import type { StoreItem, CreateStoreItemRequest } from '../types';
 
-const BASE_PATH = '/store-items';
+const BASE_PATH = 'store-items';
 
 export const storeItemApi = {
     /**
