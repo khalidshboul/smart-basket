@@ -1,7 +1,7 @@
 import { apiClient } from './client';
 import type { ReferenceItem, CreateReferenceItemRequest } from '../types';
 
-const BASE_PATH = '/items';
+const BASE_PATH = 'items';
 
 export const referenceItemApi = {
     getAll: async (): Promise<ReferenceItem[]> => {
