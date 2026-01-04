@@ -25,7 +25,6 @@ public class ReferenceItemMapper {
                 .images(entity.getImages() != null ? entity.getImages() : new ArrayList<>())
                 .availableInAllStores(entity.isAvailableInAllStores())
                 .specificStoreIds(entity.getSpecificStoreIds() != null ? entity.getSpecificStoreIds() : new ArrayList<>())
-                .linkedStoreIds(entity.getLinkedStoreIds() != null ? entity.getLinkedStoreIds() : new ArrayList<>())
                 .active(entity.isActive())
                 .build();
     }

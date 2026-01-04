@@ -54,12 +54,14 @@ public class BasketComparisonService {
             storeResults.add(result);
         }
 
-        // 4. Sort by total price (cheapest first), putting stores with missing items last
+        // 4. Sort by: 1) Number of missing items (fewer is better), 2) Then by price (cheapest first)
         storeResults.sort((a, b) -> {
-            // Stores with all items available come first
-            if (a.isAllItemsAvailable() && !b.isAllItemsAvailable()) return -1;
-            if (!a.isAllItemsAvailable() && b.isAllItemsAvailable()) return 1;
-            // Then sort by price
+            // First: Sort by number of missing items (stores with fewer missing items come first)
+            int missingComparison = Integer.compare(a.getMissingItems().size(), b.getMissingItems().size());
+            if (missingComparison != 0) {
+                return missingComparison;
+            }
+            // Second: If same number of missing items, sort by price (cheapest first)
             return Double.compare(a.getTotalPrice(), b.getTotalPrice());
         });
 
@@ -98,6 +100,24 @@ public class BasketComparisonService {
         double totalPrice = 0.0;
 
         for (ReferenceItem refItem : basketItems) {
+            // First check if this item is assigned to this store
+            // Use specificStoreIds (admin-defined whitelist) when availableInAllStores is false
+            boolean isAssignedToStore = refItem.isAvailableInAllStores() || 
+                    (refItem.getSpecificStoreIds() != null && refItem.getSpecificStoreIds().contains(store.getId()));
+            
+            if (!isAssignedToStore) {
+                // Item is not assigned to this store - mark as missing
+                missingItems.add(refItem.getName());
+                itemPrices.add(StoreItemPriceInfo.builder()
+                        .referenceItemId(refItem.getId())
+                        .referenceItemName(refItem.getName())
+                        .available(false)
+                        .price(0.0)
+                        .currency(DEFAULT_CURRENCY)
+                        .build());
+                continue;
+            }
+            
             // Find the store item for this reference item at this store
             List<StoreItem> storeItems = storeItemRepository.findByReferenceItemId(refItem.getId())
                     .stream()
@@ -118,8 +138,14 @@ public class BasketComparisonService {
                 // Use cached price from StoreItem (no need to query StorePrice table)
                 StoreItem storeItem = storeItems.get(0);
                 
-                if (storeItem.getCurrentPrice() != null && storeItem.getCurrentPrice() > 0) {
-                    totalPrice += storeItem.getCurrentPrice();
+                // Use discount price, fallback to original price if not set
+                Double effectivePrice = storeItem.getDiscountPrice();
+                if (effectivePrice == null || effectivePrice <= 0) {
+                    effectivePrice = storeItem.getOriginalPrice();
+                }
+                
+                if (effectivePrice != null && effectivePrice > 0) {
+                    totalPrice += effectivePrice;
 
                     itemPrices.add(StoreItemPriceInfo.builder()
                             .referenceItemId(refItem.getId())
@@ -127,7 +153,7 @@ public class BasketComparisonService {
                             .storeItemId(storeItem.getId())
                             .storeItemName(storeItem.getName())
                             .brand(storeItem.getBrand())
-                            .price(storeItem.getCurrentPrice())
+                            .price(effectivePrice)
                             .currency(storeItem.getCurrency() != null ? storeItem.getCurrency() : DEFAULT_CURRENCY)
                             .isPromotion(storeItem.getIsPromotion() != null && storeItem.getIsPromotion())
                             .available(true)

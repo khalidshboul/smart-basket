@@ -22,7 +22,6 @@ public class ReferenceItemDto {
     private List<String> images;
     private boolean availableInAllStores;
     private List<String> specificStoreIds;
-    private List<String> linkedStoreIds;
     private boolean active;
 }
 

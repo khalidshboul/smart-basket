@@ -25,7 +25,7 @@ public class StoreItemDto {
     private List<String> images;
     
     // Current price info
-    private Double currentPrice;
+    private Double discountPrice;
     private Double originalPrice;
     private Double discountPercentage; // Calculated field
     private String currency;

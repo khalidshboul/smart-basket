@@ -77,7 +77,7 @@ public class StoreItemService {
 
         // Set initial price if provided
         if (request.getInitialPrice() != null) {
-            storeItem.setCurrentPrice(request.getInitialPrice());
+            storeItem.setDiscountPrice(request.getInitialPrice());
             storeItem.setOriginalPrice(request.getOriginalPrice());
             storeItem.setCurrency(request.getCurrency() != null ? request.getCurrency() : DEFAULT_CURRENCY);
             storeItem.setIsPromotion(request.getIsPromotion() != null ? request.getIsPromotion() : false);
@@ -85,9 +85,6 @@ public class StoreItemService {
         }
 
         StoreItem saved = storeItemRepository.save(storeItem);
-
-        // Auto-link: Add storeId to reference item's linkedStoreIds
-        addStoreToReferenceItem(refItem, request.getStoreId());
 
         return toDto(saved, store.getName(), refItem.getName());
     }
@@ -123,7 +120,7 @@ public class StoreItemService {
     }
 
     /**
-     * Delete a store item and cleanup linkage
+     * Delete a store item
      */
     @Transactional
     public boolean deleteStoreItem(String id) {
@@ -133,48 +130,8 @@ public class StoreItemService {
         }
 
         StoreItem item = optItem.get();
-        String referenceItemId = item.getReferenceItemId();
-        String storeId = item.getStoreId();
-
-        // Delete the store item
         storeItemRepository.delete(item);
-
-        // Check if any other store items still link this reference to this store
-        boolean otherLinksExist = storeItemRepository.findByReferenceItemId(referenceItemId)
-                .stream()
-                .anyMatch(si -> si.getStoreId().equals(storeId));
-
-        // If no other links exist, remove from linkedStoreIds
-        if (!otherLinksExist) {
-            removeStoreFromReferenceItem(referenceItemId, storeId);
-        }
-
         return true;
-    }
-
-    /**
-     * Add a store ID to reference item's linkedStoreIds
-     */
-    private void addStoreToReferenceItem(ReferenceItem refItem, String storeId) {
-        if (refItem.getLinkedStoreIds() == null) {
-            refItem.setLinkedStoreIds(new ArrayList<>());
-        }
-        if (!refItem.getLinkedStoreIds().contains(storeId)) {
-            refItem.getLinkedStoreIds().add(storeId);
-            referenceItemRepository.save(refItem);
-        }
-    }
-
-    /**
-     * Remove a store ID from reference item's linkedStoreIds
-     */
-    private void removeStoreFromReferenceItem(String referenceItemId, String storeId) {
-        referenceItemRepository.findById(referenceItemId).ifPresent(refItem -> {
-            if (refItem.getLinkedStoreIds() != null) {
-                refItem.getLinkedStoreIds().remove(storeId);
-                referenceItemRepository.save(refItem);
-            }
-        });
     }
 
     /**
@@ -203,8 +160,8 @@ public class StoreItemService {
 
     private StoreItemDto toDto(StoreItem item, String storeName, String referenceItemName) {
         Double discountPercentage = null;
-        if (item.getOriginalPrice() != null && item.getCurrentPrice() != null && item.getOriginalPrice() > 0) {
-            discountPercentage = ((item.getOriginalPrice() - item.getCurrentPrice()) / item.getOriginalPrice()) * 100;
+        if (item.getOriginalPrice() != null && item.getDiscountPrice() != null && item.getOriginalPrice() > 0 && item.getDiscountPrice() > 0) {
+            discountPercentage = ((item.getOriginalPrice() - item.getDiscountPrice()) / item.getOriginalPrice()) * 100;
         }
         
         return StoreItemDto.builder()
@@ -218,7 +175,7 @@ public class StoreItemService {
                 .brand(item.getBrand())
                 .barcode(item.getBarcode())
                 .images(item.getImages() != null ? item.getImages() : new ArrayList<>())
-                .currentPrice(item.getCurrentPrice())
+                .discountPrice(item.getDiscountPrice())
                 .originalPrice(item.getOriginalPrice())
                 .discountPercentage(discountPercentage)
                 .currency(item.getCurrency())

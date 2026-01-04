@@ -42,11 +42,6 @@ public class ReferenceItem {
     @Builder.Default
     private List<String> specificStoreIds = new ArrayList<>();
     
-    // Denormalized field for fast store lookup
-    // Auto-updated when StoreItem is created/deleted
-    @Builder.Default
-    private List<String> linkedStoreIds = new ArrayList<>();
-    
     // Active status
     @Builder.Default
     private boolean active = false;

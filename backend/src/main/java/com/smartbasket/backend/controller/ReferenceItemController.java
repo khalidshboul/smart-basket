@@ -2,7 +2,6 @@ package com.smartbasket.backend.controller;
 
 import com.smartbasket.backend.dto.CreateReferenceItemRequest;
 import com.smartbasket.backend.dto.ReferenceItemDto;
-import com.smartbasket.backend.exception.ResourceNotFoundException;
 import com.smartbasket.backend.service.ReferenceItemService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class ReferenceItemController {
 
     private final ReferenceItemService referenceItemService;
@@ -28,12 +28,12 @@ public class ReferenceItemController {
     public ResponseEntity<ReferenceItemDto> getItemById(@PathVariable String id) {
         return referenceItemService.getItemById(id)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ResourceNotFoundException("ReferenceItem", "id", id));
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/category/{category}")
-    public ResponseEntity<List<ReferenceItemDto>> getItemsByCategory(@PathVariable String category) {
-        return ResponseEntity.ok(referenceItemService.getItemsByCategory(category));
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<List<ReferenceItemDto>> getItemsByCategory(@PathVariable String categoryId) {
+        return ResponseEntity.ok(referenceItemService.getItemsByCategory(categoryId));
     }
 
     @GetMapping("/search")
@@ -53,7 +53,7 @@ public class ReferenceItemController {
             @Valid @RequestBody CreateReferenceItemRequest request) {
         return referenceItemService.updateItem(id, request)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ResourceNotFoundException("ReferenceItem", "id", id));
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
@@ -61,13 +61,13 @@ public class ReferenceItemController {
         if (referenceItemService.deleteItem(id)) {
             return ResponseEntity.noContent().build();
         }
-        throw new ResourceNotFoundException("ReferenceItem", "id", id);
+        return ResponseEntity.notFound().build();
     }
 
     @PatchMapping("/{id}/toggle-status")
     public ResponseEntity<ReferenceItemDto> toggleItemStatus(@PathVariable String id) {
         return referenceItemService.toggleStatus(id)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ResourceNotFoundException("ReferenceItem", "id", id));
+                .orElse(ResponseEntity.notFound().build());
     }
 }

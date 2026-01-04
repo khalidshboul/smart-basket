@@ -10,4 +10,7 @@ import java.util.List;
 public interface StoreItemRepository extends MongoRepository<StoreItem, String> {
     List<StoreItem> findByReferenceItemId(String referenceItemId);
     List<StoreItem> findByStoreId(String storeId);
+    
+    // For cascade deletion when stores are unassigned from a reference item
+    void deleteByReferenceItemIdAndStoreIdIn(String referenceItemId, List<String> storeIds);
 }

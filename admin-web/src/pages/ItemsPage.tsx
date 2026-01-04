@@ -12,6 +12,8 @@ export function ItemsPage() {
     const [editingItem, setEditingItem] = useState<ReferenceItem | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [filterCategory, setFilterCategory] = useState('');
+    const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+    const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
     const [formData, setFormData] = useState<CreateReferenceItemRequest>({
         name: '',
         nameAr: '',
@@ -74,6 +76,25 @@ export function ItemsPage() {
         const matchesCategory = !filterCategory || item.categoryId === filterCategory;
         return matchesSearch && matchesCategory;
     });
+
+    // Helper to render category icon
+    const renderCategoryIcon = (icon: string | null | undefined, size: string = 'w-5 h-5') => {
+        if (!icon) return null;
+        // Check if it's an image URL/data (long string, or contains image indicators)
+        const isImage = icon.startsWith('data:') || 
+                        icon.startsWith('http') || 
+                        icon.startsWith('/') ||
+                        icon.includes('base64') ||
+                        icon.length > 20; // Emojis are typically 1-4 chars, Base64 is very long
+        if (isImage) {
+            return <img src={icon} alt="" className={`${size} rounded object-cover flex-shrink-0`} />;
+        }
+        return <span className="flex-shrink-0">{icon}</span>;
+    };
+
+    // Get selected category for display
+    const selectedFilterCategory = categories.find(c => c.id === filterCategory);
+    const selectedFormCategory = categories.find(c => c.id === formData.categoryId);
 
     const openCreateModal = () => {
         setEditingItem(null);
@@ -204,16 +225,42 @@ export function ItemsPage() {
                         className="form-input pl-10"
                     />
                 </div>
-                <select
-                    value={filterCategory}
-                    onChange={(e) => setFilterCategory(e.target.value)}
-                    className="form-input w-full sm:w-48"
-                >
-                    <option value="">All Categories</option>
-                    {categories.map(cat => (
-                        <option key={cat.id} value={cat.id}>{cat.name}</option>
-                    ))}
-                </select>
+                <div className="relative w-full sm:w-48">
+                    <button
+                        type="button"
+                        onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+                        className="form-input w-full text-left flex items-center gap-2"
+                    >
+                        {selectedFilterCategory ? (
+                            <>
+                                {renderCategoryIcon(selectedFilterCategory.icon)}
+                                <span className="truncate">{selectedFilterCategory.name}</span>
+                            </>
+                        ) : (
+                            <span className="text-slate-400">All Categories</span>
+                        )}
+                    </button>
+                    {showFilterDropdown && (
+                        <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                            <div
+                                onClick={() => { setFilterCategory(''); setShowFilterDropdown(false); }}
+                                className="flex items-center gap-2 p-2 hover:bg-slate-100 cursor-pointer text-slate-500"
+                            >
+                                All Categories
+                            </div>
+                            {categories.map(cat => (
+                                <div
+                                    key={cat.id}
+                                    onClick={() => { setFilterCategory(cat.id); setShowFilterDropdown(false); }}
+                                    className={`flex items-center gap-2 p-2 hover:bg-slate-100 cursor-pointer ${filterCategory === cat.id ? 'bg-primary-50' : ''}`}
+                                >
+                                    {renderCategoryIcon(cat.icon)}
+                                    <span className="truncate">{cat.name}</span>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
 
             {/* Items Grid */}
@@ -358,19 +405,37 @@ export function ItemsPage() {
 
                                 <div>
                                     <label className="form-label">Category *</label>
-                                    <select
-                                        className="form-input"
-                                        value={formData.categoryId}
-                                        onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
-                                        required
-                                    >
-                                        <option value="">Select category...</option>
-                                        {categories.map(cat => (
-                                            <option key={cat.id} value={cat.id}>
-                                                {cat.icon ? `${cat.icon} ` : ''}{cat.name}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    <div className="relative">
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
+                                            className="form-input w-full text-left flex items-center gap-2"
+                                        >
+                                            {selectedFormCategory ? (
+                                                <>
+                                                    {renderCategoryIcon(selectedFormCategory.icon)}
+                                                    <span className="truncate">{selectedFormCategory.name}</span>
+                                                </>
+                                            ) : (
+                                                <span className="text-slate-400">Select category...</span>
+                                            )}
+                                        </button>
+                                        {showCategoryDropdown && (
+                                            <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                                                {categories.map(cat => (
+                                                    <div
+                                                        key={cat.id}
+                                                        onClick={() => { setFormData({ ...formData, categoryId: cat.id }); setShowCategoryDropdown(false); }}
+                                                        className={`flex items-center gap-2 p-2 hover:bg-slate-100 cursor-pointer ${formData.categoryId === cat.id ? 'bg-primary-50' : ''}`}
+                                                    >
+                                                        {renderCategoryIcon(cat.icon)}
+                                                        <span className="truncate">{cat.name}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <input type="hidden" name="categoryId" value={formData.categoryId} required />
                                 </div>
 
                                 <div>

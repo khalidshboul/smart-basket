@@ -51,7 +51,7 @@ public class PriceUpdateService {
         StorePrice savedPrice = storePriceRepository.save(priceRecord);
 
         // 2. Update cached price on StoreItem
-        storeItem.setCurrentPrice(price);
+        storeItem.setDiscountPrice(price);
         storeItem.setOriginalPrice(originalPrice);
         storeItem.setCurrency(effectiveCurrency);
         storeItem.setIsPromotion(effectivePromotion);

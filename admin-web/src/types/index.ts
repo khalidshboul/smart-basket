@@ -34,7 +34,6 @@ export interface ReferenceItem {
     images: string[];
     availableInAllStores: boolean;
     specificStoreIds: string[];
-    linkedStoreIds: string[];
     active: boolean;
 }
 
@@ -83,7 +82,7 @@ export interface StoreItem {
     barcode: string;
     images: string[];
     // Current price info
-    currentPrice: number | null;
+    discountPrice: number | null;
     originalPrice: number | null;
     discountPercentage: number | null;
     currency: string;

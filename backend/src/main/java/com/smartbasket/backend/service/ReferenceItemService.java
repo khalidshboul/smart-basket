@@ -8,11 +8,16 @@ import com.smartbasket.backend.model.Category;
 import com.smartbasket.backend.model.ReferenceItem;
 import com.smartbasket.backend.repository.CategoryRepository;
 import com.smartbasket.backend.repository.ReferenceItemRepository;
+import com.smartbasket.backend.repository.StoreItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,6 +26,7 @@ public class ReferenceItemService {
 
     private final ReferenceItemRepository referenceItemRepository;
     private final CategoryRepository categoryRepository;
+    private final StoreItemRepository storeItemRepository;
     private final ReferenceItemMapper referenceItemMapper;
 
     public List<ReferenceItemDto> getAllItems() {
@@ -60,12 +66,49 @@ public class ReferenceItemService {
         return referenceItemMapper.toDto(saved);
     }
 
+    @Transactional
     public Optional<ReferenceItemDto> updateItem(String id, CreateReferenceItemRequest request) {
         // Validate and get category
         String categoryName = getCategoryName(request.getCategoryId());
         
         return referenceItemRepository.findById(id)
                 .map(existing -> {
+                    // Detect removed stores for cascade deletion
+                    List<String> oldSpecificStoreIds = existing.getSpecificStoreIds() != null 
+                            ? existing.getSpecificStoreIds() : new ArrayList<>();
+                    List<String> newSpecificStoreIds = request.getSpecificStoreIds() != null 
+                            ? request.getSpecificStoreIds() : new ArrayList<>();
+                    
+                    // Find stores that were removed
+                    Set<String> removedStoreIds = new HashSet<>(oldSpecificStoreIds);
+                    removedStoreIds.removeAll(newSpecificStoreIds);
+                    
+                    // Check if switching from "available in all stores" to specific stores
+                    boolean wasAvailableInAll = existing.isAvailableInAllStores();
+                    boolean willBeAvailableInAll = request.getAvailableInAllStores() != null 
+                            ? request.getAvailableInAllStores() : wasAvailableInAll;
+                    
+                    // If switching to restricted mode, delete StoreItems for stores not in new list
+                    if (wasAvailableInAll && !willBeAvailableInAll && !newSpecificStoreIds.isEmpty()) {
+                        // Find all existing StoreItems for this reference and get their storeIds
+                        List<String> existingStoreIds = storeItemRepository.findByReferenceItemId(id)
+                                .stream()
+                                .map(si -> si.getStoreId())
+                                .distinct()
+                                .toList();
+                        Set<String> storesToRemove = new HashSet<>(existingStoreIds);
+                        storesToRemove.removeAll(newSpecificStoreIds);
+                        if (!storesToRemove.isEmpty()) {
+                            storeItemRepository.deleteByReferenceItemIdAndStoreIdIn(id, new ArrayList<>(storesToRemove));
+                        }
+                    }
+                    
+                    // If stores were explicitly removed from specificStoreIds, cascade delete
+                    if (!removedStoreIds.isEmpty() && !willBeAvailableInAll) {
+                        storeItemRepository.deleteByReferenceItemIdAndStoreIdIn(id, new ArrayList<>(removedStoreIds));
+                    }
+                    
+                    // Apply all field updates
                     existing.setName(request.getName());
                     existing.setNameAr(request.getNameAr());
                     existing.setCategoryId(request.getCategoryId());
@@ -77,13 +120,17 @@ public class ReferenceItemService {
                         existing.setAvailableInAllStores(request.getAvailableInAllStores());
                     }
                     existing.setSpecificStoreIds(request.getSpecificStoreIds() != null ? request.getSpecificStoreIds() : existing.getSpecificStoreIds());
+                    
                     return referenceItemRepository.save(existing);
                 })
                 .map(referenceItemMapper::toDto);
     }
 
+    @Transactional
     public boolean deleteItem(String id) {
         if (referenceItemRepository.existsById(id)) {
+            // Also delete all StoreItems linked to this reference item
+            storeItemRepository.deleteAll(storeItemRepository.findByReferenceItemId(id));
             referenceItemRepository.deleteById(id);
             return true;
         }
@@ -105,4 +152,3 @@ public class ReferenceItemService {
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found: " + categoryId));
     }
 }
-

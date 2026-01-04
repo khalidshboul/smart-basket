@@ -37,7 +37,7 @@ public class StoreItem {
     private List<String> images = new ArrayList<>();
     
     // Denormalized price data (updated when price changes)
-    private Double currentPrice;
+    private Double discountPrice;
     private Double originalPrice; // For discount calculation
     private String currency;
     private Boolean isPromotion;

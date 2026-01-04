@@ -86,7 +86,11 @@ export function PreviewPage() {
             for (const [itemId, quantity] of cart.entries()) {
                 const item = activeItems.find(i => i.id === itemId);
                 const storeItem = storeItems.find(si => si.referenceItemId === itemId && si.storeId === store.id);
-                const price = storeItem?.currentPrice ?? null;
+                // Use discount price, fallback to original price if not set
+                let price = storeItem?.discountPrice ?? null;
+                if (price === null || price <= 0) {
+                    price = storeItem?.originalPrice ?? null;
+                }
 
                 itemPrices.push({
                     name: item?.name || 'Unknown',

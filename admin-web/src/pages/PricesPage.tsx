@@ -10,7 +10,7 @@ import type { StoreItem } from '../types';
 
 interface PendingChange {
     storeItemId: string;
-    currentPrice: number;
+    discountPrice: number;
     originalPrice: number | null;
 }
 
@@ -80,12 +80,24 @@ export function PricesPage() {
         return storeItems.find(si => si.referenceItemId === refItemId && si.storeId === storeId);
     };
 
-    const handlePriceChange = (storeItemId: string, field: 'currentPrice' | 'originalPrice', value: string) => {
+    const handlePriceChange = (storeItemId: string, field: 'discountPrice' | 'originalPrice', value: string) => {
         const numValue = parseFloat(value) || 0;
+
+        // Find the actual StoreItem to preserve its values
+        const storeItem = storeItems.find(si => si.id === storeItemId);
+
         setPendingChanges(prev => {
             const next = new Map(prev);
-            const existing = next.get(storeItemId) || { storeItemId, currentPrice: 0, originalPrice: null };
-            next.set(storeItemId, { ...existing, [field]: field === 'originalPrice' && value === '' ? null : numValue });
+            // Use existing pending change, or fallback to actual StoreItem values
+            const existing = next.get(storeItemId) || {
+                storeItemId,
+                discountPrice: storeItem?.discountPrice ?? 0,
+                originalPrice: storeItem?.originalPrice ?? null,
+            };
+            next.set(storeItemId, {
+                ...existing,
+                [field]: field === 'originalPrice' && value === '' ? null : numValue
+            });
             return next;
         });
     };
@@ -108,7 +120,7 @@ export function PricesPage() {
         for (const change of pendingChanges.values()) {
             await updateMutation.mutateAsync({
                 storeItemId: change.storeItemId,
-                price: change.currentPrice,
+                price: change.discountPrice,
                 originalPrice: change.originalPrice ?? undefined,
             });
         }
@@ -221,9 +233,10 @@ export function PricesPage() {
                                                     const pendingChange = si ? pendingChanges.get(si.id) : undefined;
                                                     const pendingNew = pendingNewItems.find(p => p.referenceItemId === item.id && p.storeId === store.id);
 
-                                                    const discountPrice = pendingChange?.currentPrice ?? si?.currentPrice ?? pendingNew?.price ?? 0;
+                                                    const discountPrice = pendingChange?.discountPrice ?? si?.discountPrice ?? pendingNew?.price ?? 0;
                                                     const originalPrice = pendingChange?.originalPrice ?? si?.originalPrice ?? pendingNew?.originalPrice ?? null;
-                                                    const discount = originalPrice && originalPrice > discountPrice
+                                                    const isInvalidDiscount = originalPrice !== null && discountPrice > originalPrice;
+                                                    const discount = originalPrice && originalPrice > discountPrice && discountPrice > 0
                                                         ? Math.round(((originalPrice - discountPrice) / originalPrice) * 100)
                                                         : null;
 
@@ -250,10 +263,10 @@ export function PricesPage() {
                                                                 <input
                                                                     type="number"
                                                                     step="0.01"
-                                                                    className="form-input w-24 py-1 px-2 text-sm"
+                                                                    className={`form-input w-24 py-1 px-2 text-sm ${isInvalidDiscount ? 'border-red-500' : ''}`}
                                                                     value={discountPrice || ''}
                                                                     onChange={(e) => {
-                                                                        if (si) handlePriceChange(si.id, 'currentPrice', e.target.value);
+                                                                        if (si) handlePriceChange(si.id, 'discountPrice', e.target.value);
                                                                         else handleNewItemPrice(item.id, store.id, 'price', e.target.value);
                                                                     }}
                                                                     placeholder="0.00"
